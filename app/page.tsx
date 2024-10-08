@@ -1,101 +1,242 @@
-import Image from "next/image";
+'use client'
+
+import { useState, useRef } from 'react'
+import { ModeToggle } from "./components/mode-toggle" 
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Mail, Menu, X } from "lucide-react"
+import Link from "next/link"
+import Image from "next/image"
+import { motion, useInView } from "framer-motion"
+
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.5 }
+  }
+}
+
+const staggerChildren = {
+  animate: {
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+}
+
+function AnimatedSection({ children, className, id }: { children: React.ReactNode, className?: string, id?: string }) {
+  const ref = useRef(null)
+  const isInView = useInView(ref, { once: true, amount: 0.3 })
+
+  return (
+    <motion.section
+      ref={ref}
+      initial="initial"
+      animate={isInView ? "animate" : "initial"}
+      variants={fadeIn}
+      className={className}
+      id={id}
+    >
+      {children}
+    </motion.section>
+  )
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen)
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <motion.header 
+        className="border-b"
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Template Project</h1>
+          <nav className="hidden md:flex items-center space-x-4">
+            <Link href="#projects" className="hover:underline">Projects</Link>
+            <Link href="#about" className="hover:underline">About</Link>
+            <Link href="#team" className="hover:underline">Team</Link>
+            <Link href="#contact" className="hover:underline">Contact Us</Link>
+            <ModeToggle />
+          </nav>
+          <div className="md:hidden flex items-center">
+            <ModeToggle />
+            <button onClick={toggleMenu} className="ml-4 p-2">
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
+        {isMenuOpen && (
+          <div className="md:hidden">
+            <nav className="flex flex-col items-center space-y-4 py-4">
+              <Link href="#projects" className="hover:underline">Projects</Link>
+              <Link href="#about" className="hover:underline">About</Link>
+              <Link href="#team" className="hover:underline">Team</Link>
+              <Link href="#contact" className="hover:underline">Contact Us</Link>
+            </nav>
+          </div>
+        )}
+      </motion.header>
+
+      <main className="container mx-auto px-4 py-8 space-y-16">
+        <AnimatedSection id="projects" className="space-y-8">
+          <h2 className="text-3xl font-bold text-center">Our Projects</h2>
+          <motion.div className="md:grid-cols-2 gap-8" variants={staggerChildren}>
+            <motion.div variants={fadeIn}>
+              <Card>
+                <CardHeader>
+                  <CardTitle></CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>
+                    Description of Project
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+        </AnimatedSection>
+
+        <AnimatedSection id="about" className="space-y-8">
+          <h2 className="text-3xl font-bold text-center">About Us</h2>
+          <motion.div className="grid md:grid-cols-2 gap-8" variants={staggerChildren}>
+            <motion.div variants={fadeIn}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Our Mission</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>
+                    Description of your Mission
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div variants={fadeIn}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Our Vision</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>
+                    Description of your Vision
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+        </AnimatedSection>
+
+        <AnimatedSection id="team" className="space-y-8">
+          <h2 className="text-3xl font-bold text-center">Our Team</h2>
+          <motion.div className="grid md:grid-cols-2 gap-8" variants={staggerChildren}>
+            <motion.div variants={fadeIn}>
+              <Card>
+                <CardContent>
+                  <div className="relative w-full h-48 mb-4">
+                    <Image
+                      src="/placeholder.svg?height=192&width=384"
+                      alt="Team Member 1"
+                      fill
+                      objectFit="cover"
+                      className="rounded-t-lg"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold text-center">Abhiman Panwar</h3>
+                  <p className="text-center">Front-end Developer</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div variants={fadeIn}>
+              <Card>
+                <CardContent>
+                  <div className="relative w-full h-48 mb-4">
+                    <Image
+                      src="/placeholder.svg?height=192&width=384"
+                      alt="Team Member 2"
+                      fill
+                      objectFit="cover"
+                      className="rounded-t-lg"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold text-center">Shresth Shroff</h3>
+                  <p className="text-center">Back-end Developer</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div variants={fadeIn}>
+              <Card>
+                <CardContent>
+                  <div className="relative w-full h-48 mb-4">
+                    <Image
+                      src="/placeholder.svg?height=192&width=384"
+                      alt="Team Member 3"
+                      fill
+                      objectFit="cover"
+                      className="rounded-t-lg"
+                    /> 
+                  </div>
+                  <h3 className="text-xl font-semibold text-center">Aditya Jha</h3>
+                  <p className="text-center">Lead Researcher</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div variants={fadeIn}>
+              <Card>
+                <CardContent>
+                  <div className="relative w-full h-48 mb-4">
+                    <Image
+                      src="/placeholder.svg?height=192&width=384"
+                      alt="Team Member 4"
+                      fill
+                      objectFit="cover"
+                      className="rounded-t-lg"
+                    />
+                  </div>
+                  <h3 className="text-xl font-semibold text-center">Aditya Anjana</h3>
+                  <p className="text-center">Lead Researcher</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+        </AnimatedSection>
+
+
+        <AnimatedSection id="contact" className="space-y-8">
+          <h2 className="text-3xl font-bold text-center">Contact Us</h2>
+          <motion.div 
+            className="flex justify-center"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Link href="mailto:contact@vlrgroup.com" target="_blank" rel="noopener noreferrer">
+              <Button size="lg">
+                <Mail className="mr-2 h-4 w-4" /> Contact Us
+              </Button>
+            </Link>
+          </motion.div>
+        </AnimatedSection>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+      <motion.footer 
+        className="border-t mt-16"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+      >
+        <div className="container mx-auto px-4 py-6 text-center">
+          <p>&copy; 2024 VLR Group. All rights reserved.</p>
+        </div>
+      </motion.footer>
     </div>
-  );
+  )
 }
